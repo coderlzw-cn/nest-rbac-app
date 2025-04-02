@@ -1,19 +1,16 @@
 import { Logger } from '@nestjs/common';
-import { NestFactory, Reflector } from '@nestjs/core';
+import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { DataSource } from 'typeorm';
 import { AppModule } from './app.module';
-import { PermissionGuard } from './guard/permission.guard';
-import { RolesGuard } from './guard/roles.guard';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix('/api');
   const options = new DocumentBuilder().setTitle('RBAC API').setDescription('基于角色的访问控制系统的API描述').setVersion('1.0').addTag('rbac').build();
-  const reflector = app.get(Reflector);
-  const dataSource = app.get(DataSource);
-  app.useGlobalGuards(new RolesGuard(reflector, dataSource));
-  app.useGlobalGuards(new PermissionGuard(reflector, dataSource));
+  // const reflector = app.get(Reflector);
+  // const dataSource = app.get(DataSource);
+  // app.useGlobalGuards(new RolesGuard(reflector, dataSource));
+  // app.useGlobalGuards(new PermissionGuard(reflector, dataSource));
 
   const document = SwaggerModule.createDocument(app, options);
   SwaggerModule.setup('api', app, document);

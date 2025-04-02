@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Role } from '../../roles/entites/role.entity';
+import { RoleEntity } from '../../roles/entites/role.entity';
 
-@Entity('users')
-export class User {
-  constructor(partial?: Partial<User>) {
+@Entity('user')
+export class UserEntity {
+  constructor(partial?: Partial<UserEntity>) {
     Object.assign(this, partial);
   }
 
@@ -33,11 +33,12 @@ export class User {
   @UpdateDateColumn({ name: 'update_at' })
   updatedAt: Date;
 
-  @ManyToMany(() => Role, (role) => role.users)
+  // 一个用户可以有多个角色，一个角色也可以分配给多个用户，因此它们之间是多对多关系
+  @ManyToMany(() => RoleEntity, (role) => role.users)
   @JoinTable({
     name: 'user_roles',
     joinColumn: { name: 'user_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'role_id', referencedColumnName: 'id' },
   })
-  roles: Role[];
+  roles: RoleEntity[];
 }

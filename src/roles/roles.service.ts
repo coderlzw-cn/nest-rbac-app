@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, In, Repository } from 'typeorm';
 import { Permission } from '../permission/entities/permission.entity';
 import { CreateRoleDto } from './dto/create-role.dto';
-import { Role } from './entites/role.entity';
+import { RoleEntity } from './entites/role.entity';
 
 @Injectable()
 export class RolesService {
@@ -11,9 +11,10 @@ export class RolesService {
 
   constructor(
     private dataSource: DataSource,
-    @InjectRepository(Role)
-    private readonly roleRepository: Repository<Role>,
-  ) {}
+    @InjectRepository(RoleEntity)
+    private readonly roleRepository: Repository<RoleEntity>,
+  ) {
+  }
 
   async roles() {
     return this.roleRepository.find({
@@ -26,8 +27,12 @@ export class RolesService {
     await queryRunner.connect();
     await queryRunner.startTransaction();
     try {
-      const role = new Role({ name: createRoleDto.name, remark: createRoleDto.remark, description: createRoleDto.description });
-      role.permissions = createRoleDto.permissions.map(({ id }) => new Permission({ id }));
+      const role = new RoleEntity({
+        name: createRoleDto.name,
+        remark: createRoleDto.remark,
+        description: createRoleDto.description,
+        permissions: createRoleDto.permissions.map((permissionId) => new Permission({ id: permissionId })),
+      });
       await queryRunner.manager.save(role);
       await queryRunner.commitTransaction();
     } catch (error: unknown) {

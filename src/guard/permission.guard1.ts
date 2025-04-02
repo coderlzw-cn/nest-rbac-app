@@ -1,9 +1,9 @@
 import { CanActivate, ExecutionContext, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { DataSource } from 'typeorm';
-import { User } from '../user/entities/user.entity';
-import { Request } from 'express';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
@@ -17,7 +17,7 @@ export class PermissionGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     // TODO JWT 认证后，将用户信息挂载到 request 上
-    const user = new User({ id: 1, username: 'admin', email: 'admin@example.com' });
+    const user = new UserEntity({ id: 1, username: 'admin', email: 'admin@example.com' });
     const path = request.path;
     const method = request.method;
     this.logger.log(`Permission 守卫 ${method} ${path}`);
@@ -30,8 +30,8 @@ export class PermissionGuard implements CanActivate {
     return this.matchPermissions(requirePermissions, user);
   }
 
-  private async matchPermissions(requiredPermissions: string[], user: User) {
-    const userWithRoles = await this.dataSource.getRepository(User).findOne({
+  private async matchPermissions(requiredPermissions: string[], user: UserEntity) {
+    const userWithRoles = await this.dataSource.getRepository(UserEntity).findOne({
       where: { id: user.id },
       relations: { roles: { permissions: true } },
     });

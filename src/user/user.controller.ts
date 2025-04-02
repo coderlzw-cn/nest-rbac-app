@@ -1,6 +1,5 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, Param, Post, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, Post, UseInterceptors } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Permissions } from '../decorator/permissions.decorator';
 import { Roles } from '../decorator/roles.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserService } from './user.service';
@@ -15,14 +14,12 @@ export class UserController {
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   findUsersWithRoles() {
-    console.log("get");
     return this.userService.findUsersWithRoles();
   }
 
   @ApiOperation({ summary: '创建用户' })
   @Post()
-  createUserWithRoles(@Body() createUserDto: any) {
-    console.log("post");
+  createUserWithRoles(@Body() createUserDto: CreateUserDto) {
     return this.userService.createUser(createUserDto);
   }
 }

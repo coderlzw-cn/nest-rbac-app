@@ -2,26 +2,26 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Permission } from '../../permission/entities/permission.entity';
-import { User } from '../../user/entities/user.entity';
+import { UserEntity } from '../../user/entities/user.entity';
 
 @Entity('roles')
-export class Role {
-  constructor(partial?: Partial<Role>) {
+export class RoleEntity {
+  constructor(partial?: Partial<RoleEntity>) {
     Object.assign(this, partial);
   }
 
   @PrimaryGeneratedColumn()
   id: number;
 
-  @ApiProperty({ description: '角色名称', uniqueItems: true })
+  @ApiProperty({ description: '角色名称', uniqueItems: true, example: '商品管理员' })
   @Column({ type: 'varchar', length: 255, unique: true, comment: '角色名称' })
   name: string;
 
-  @ApiProperty({ description: '角色备注', uniqueItems: true })
+  @ApiProperty({ description: '角色备注', uniqueItems: true, example: '商品管理员' })
   @Column({ type: 'varchar', length: 255, comment: '角色备注' })
   remark: string;
 
-  @ApiProperty({ description: '角色描述' })
+  @ApiProperty({ description: '角色描述', example: '商品管理员' })
   @Column({ type: 'varchar', length: 255, comment: '角色描述' })
   description: string;
 
@@ -34,8 +34,8 @@ export class Role {
   updatedAt: Date;
 
   @ApiProperty({ description: '角色用户' })
-  @ManyToMany(() => User, (user) => user.roles)
-  users: User[];
+  @ManyToMany(() => UserEntity, (user) => user.roles)
+  users: UserEntity[];
 
   @ApiProperty({ description: '角色权限' })
   @ManyToMany(() => Permission, (permission) => permission.roles)
@@ -46,14 +46,14 @@ export class Role {
   })
   permissions: Permission[];
 
-  @ManyToMany(() => Role, (role) => role.parents)
+  @ManyToMany(() => RoleEntity, (role) => role.parents)
   @JoinTable({
     name: 'role_hierarchy',
     joinColumn: { name: 'parent_role_id', referencedColumnName: 'id' },
     inverseJoinColumn: { name: 'child_role_id', referencedColumnName: 'id' },
   })
-  children: Role[];
+  children: RoleEntity[];
 
-  @ManyToMany(() => Role, (role) => role.children)
-  parents: Role[];
+  @ManyToMany(() => RoleEntity, (role) => role.children)
+  parents: RoleEntity[];
 }

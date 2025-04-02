@@ -8,7 +8,7 @@ import { RolesService } from './roles.service';
 export class RolesController {
   constructor(private rolesService: RolesService) {}
 
-  @ApiOperation({ summary: '查询所有角色' })
+  @ApiOperation({ summary: '查询角色' })
   @UseInterceptors(ClassSerializerInterceptor)
   @Get()
   roles() {

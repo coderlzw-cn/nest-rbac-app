@@ -1,12 +1,10 @@
-import { CanActivate, ExecutionContext, ForbiddenException, Injectable, Logger, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable, Logger } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import * as path from 'node:path';
+import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { DataSource } from 'typeorm';
-import { Permission } from '../permission/entities/permission.entity';
 import { Route } from '../route/entities/route.entity';
-import { User } from '../user/entities/user.entity';
-import { Request } from 'express';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class PermissionGuard implements CanActivate {
@@ -20,7 +18,7 @@ export class PermissionGuard implements CanActivate {
   canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     // TODO JWT 认证后，将用户信息挂载到 request 上
-    const user = new User({ id: 1, username: 'admin', email: 'admin@example.com' });
+    const user = new UserEntity({ id: 1, username: 'admin', email: 'admin@example.com' });
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     const path = request.route.path as string; // /api/user/:id
     const method = request.method;
@@ -28,14 +26,14 @@ export class PermissionGuard implements CanActivate {
     return this.matchPermissions(path, method, user);
   }
 
-  private async matchPermissions(path: string, method: string, user: User) {
+  private async matchPermissions(path: string, method: string, user: UserEntity) {
     // 当前路由上绑定着该路由的权限集合
     const route = await this.dataSource.getRepository(Route).findOne({
       where: { path: path, method: method },
       relations: { permissions: true },
     });
 
-    const userEntity = await this.dataSource.getRepository(User).findOne({
+    const userEntity = await this.dataSource.getRepository(UserEntity).findOne({
       where: { id: user.id },
       relations: { roles: { permissions: true } },
     });

@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { DataSource } from 'typeorm';
-import { User } from '../user/entities/user.entity';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -18,7 +18,7 @@ export class RolesGuard implements CanActivate {
 
     // TODO JWT 认证后，将用户信息挂载到 request 上，先在这里模拟一下用户信息
     // const request = context.switchToHttp().getRequest();
-    const user = new User({ id: 1, username: 'admin', email: 'admin@example.com' });
+    const user = new UserEntity({ id: 1, username: 'admin', email: 'admin@example.com' });
 
     // 如果Controller 或者 Method 上设置了 @Roles()，则判断当前用户的角色是否包含在接口上标注的角色中
     return this.matchRoles(requiredRoles, user);
@@ -30,9 +30,9 @@ export class RolesGuard implements CanActivate {
    * @param user
    * @private
    */
-  private async matchRoles(requiredRoles: string[], user: User) {
+  private async matchRoles(requiredRoles: string[], user: UserEntity) {
     // 获取当前用户，并将用户的角色查询出来
-    const userWithRoles = await this.dataSource.getRepository(User).findOne({
+    const userWithRoles = await this.dataSource.getRepository(UserEntity).findOne({
       where: { id: user.id },
       relations: { roles: true },
     });

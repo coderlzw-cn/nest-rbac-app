@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
 import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
-import { Role } from '../../roles/entites/role.entity';
+import { RoleEntity } from '../../roles/entites/role.entity';
 import { Route } from '../../route/entities/route.entity';
 
 @Entity('permissions')
@@ -39,8 +39,8 @@ export class Permission {
   @Exclude()
   updatedAt: Date;
 
-  @ManyToMany(() => Role, (role) => role.permissions)
-  roles: Role[];
+  @ManyToMany(() => RoleEntity, (role) => role.permissions)
+  roles: RoleEntity[];
 
   @ManyToMany(() => Route, (route) => route.permissions)
   @JoinTable({
